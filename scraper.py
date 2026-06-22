@@ -2,6 +2,7 @@ import os
 import urllib.error
 import urllib.request
 import socket
+import ssl
 
 import requests
 from bs4 import BeautifulSoup
@@ -11,6 +12,8 @@ from bs4 import BeautifulSoup
 # Big fan of Counter Strike 2 :)
 # Spirit 1 x Falcons 1
 # Theyre in DUST 2 now, decider map for the grand final, 7 to 7 rounds... lets see
+# FURIA lost in the finals, im sad :(
+
 def scrape_nvidia():
     """
     Connects to the official NVIDIA App website, parses the HTML content,
@@ -125,34 +128,64 @@ def scrape_amd():
         print(f"[Scraper] A network error occurred during AMD scraping: {e}")
         return None
 
-def execute_driver_download(driver_link, target_directory):
+def scrape_intel():
+    """
+    Validates the persistent endpoint for the Intel Driver & Support Assistant.
+    Since Intel provisions a direct static endpoint that directly acts as the binary 
+    stream source, we securely return the validated destination endpoint.
+    """
+    print("\nValidating Intel direct installer endpoint repository...")
+    driver_link = "https://dsadata.intel.com/installer"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+    try:
+        # Performing a fast HEAD request to check availability before launching heavy transport operations
+        response = requests.head(driver_link, headers=headers, allow_redirects=True, timeout=10)
+        if response.status_code == 200:
+            print(f"[Scraper] Successfully validated Intel persistent link: {driver_link}")
+            return driver_link
+        else:
+            print(f"[Scraper] Error: Intel endpoint answered with unusual status code: {response.status_code}")
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"[Scraper] A network error occurred during Intel verification: {e}")
+        return None
+
+def execute_driver_download(driver_link, target_directory, brand):
     """
     Attempts to download the executable file from the provided URL using urllib with a strict timeout,
     saving it into the user-defined target directory.
     """
-    file_name = driver_link.split("/")[-1]
+
+    if brand == "INTEL":
+        file_name = "Intel-Driver-and-Support-Assistant-Installer.exe"
+    else:
+        file_name = driver_link.split("/")[-1]
+        
     full_destination_path = os.path.join(target_directory, file_name)
-    
+
     print(f"\n[Download] Commencing download of {file_name}...")
     print(f"[Download] Saving file to target location: {full_destination_path}")
     
     try:
+        ssl_context = ssl._create_unverified_context()
+        
         # Creating a specific Request object to inject complete browser headers
         # This simulates a real user click from the AMD driver page to bypass silent drops
         request_object = urllib.request.Request(
             driver_link,
             headers={
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Referer': 'https://www.amd.com/en/support/download/drivers.html',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-                'Accept-Language': 'en-US,en;q=0.9',
-                'Connection': 'keep-alive'
-            }
+                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                            'Referer': 'https://www.intel.com/' if brand == "INTEL" else 'https://www.amd.com/',
+                            'Accept': '*/*',
+                            'Connection': 'keep-alive'
+                }
         )
         
         # Opening the connection with a strict 15-second timeout to prevent infinite freezing
         print("[Download] Connecting to the remote binary repository...")
-        with urllib.request.urlopen(request_object, timeout=15) as response:
+        with urllib.request.urlopen(request_object, timeout=15, context=ssl_context) as response:
             # Creating or overwriting the target file in binary mode
             with open(full_destination_path, 'wb') as local_file:
                 # Reading the stream in small chunks (8KB) to ensure low RAM footprint
@@ -277,7 +310,7 @@ def search_driver(brand):
 
             # Step 3: If a valid path is returned (and user didn't cancel), execute the urllib download
             if target_folder:
-                execute_driver_download(discovered_link, target_folder)
+                execute_driver_download(discovered_link, target_folder, brand)
         else:
             print(
                 "[Orchestrator] Aborting workflow because no valid installer link could be extracted."
@@ -293,16 +326,23 @@ def search_driver(brand):
 
             # Step 3: If a valid path is returned (and user didn't cancel), execute the urllib download
             if target_folder:
-                execute_driver_download(discovered_link, target_folder)
+                execute_driver_download(discovered_link, target_folder, brand)
         else:
             print(
                 "[Orchestrator] Aborting workflow because no valid installer link could be extracted."
             )
     elif brand == "INTEL":
-        print(
-            "\n[Orchestrator] Intel driver scraping automation workflow is not implemented yet."
-        )
-    else:
-        print(
-            f"\n[Orchestrator] Unsupported or completely unknown hardware brand: {brand}"
-        )
+        # Step 1: Scrape the Intel page to discover the installer link
+        discovered_link = scrape_intel()
+
+        if discovered_link:
+            # Step 2: Interact with the user to manage paths, checks, and conflicts
+            target_folder = manage_download_path(discovered_link)
+
+            # Step 3: If a valid path is returned (and user didn't cancel), execute the urllib download
+            if target_folder:
+                execute_driver_download(discovered_link, target_folder, brand)
+        else:
+            print(
+                "[Orchestrator] Aborting workflow because no valid installer link could be extracted."
+            )

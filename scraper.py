@@ -56,7 +56,7 @@ def scrape_nvidia():
                 href = link["href"]
 
                 # Check if the link contains the keyword 'download' and ends with '.exe'
-                if "download" in href and href.endswith(".exe"):
+                if "download" in href and href.endswith(".exe"): # type: ignore
                     # In my IDE rn the "endswith" is causing error... but it works fine in the terminal. Dont question me.
                     # Extracting the absolute URL from the href attribute
                     driver_link = link.get("href")

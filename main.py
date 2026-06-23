@@ -1,9 +1,15 @@
-# Lets import the detect module
+# Some important things to say here: Im retrieve alot of ideas from my favorite softwares, like: Chris Titus Wintool, Revo Uninstaller, TweakUI...
+# 
+# 
+# # Lets import the detect module
 from detect import analyze_gpu, detect_gpu
 from scraper import search_driver
 # Importing the newly created software installer module
 from installer import prompt_software_selection
+# importing the uninstaller module
 from uninstaller import prompt_software_removal
+# importing the tweaks module
+from tweaks import prompt_tweaks_menu
 
 def display_menu():
     """
@@ -16,7 +22,8 @@ def display_menu():
     print("1. Download GPU Drivers")
     print("2. Install Essential Software")
     print("3. Uninstall System Software")
-    print("4. Exit Application")
+    print("4. Apply Windows Tweaks")
+    print("5. Exit Application")
     print("========================================")
 
 if __name__ == "__main__":
@@ -57,6 +64,10 @@ if __name__ == "__main__":
             prompt_software_removal()
 
         elif user_choice == "4":
+            # Initializes the tweaks application logic handling
+            prompt_tweaks_menu()
+
+        elif user_choice == "5":
             print("\n[System] Shutting down Malenia Post Format Tool. Goodbye.")
             break # Breaks the while loop, safely closing the execution
             

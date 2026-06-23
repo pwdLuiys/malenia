@@ -3,6 +3,7 @@ from detect import analyze_gpu, detect_gpu
 from scraper import search_driver
 # Importing the newly created software installer module
 from installer import prompt_software_selection
+from uninstaller import prompt_software_removal
 
 def display_menu():
     """
@@ -14,14 +15,15 @@ def display_menu():
     print("========================================")
     print("1. Download GPU Drivers")
     print("2. Install Essential Software")
-    print("3. Exit Application")
+    print("3. Uninstall System Software")
+    print("4. Exit Application")
     print("========================================")
 
 if __name__ == "__main__":
     # Main application loop to keep the CLI running until explicit exit command (basic stuff but important to explain)
     while True:
         display_menu()
-        user_choice = input("Select an option (1-3): ").strip()
+        user_choice = input("Select an option (1-4): ").strip()
 
         if user_choice == "1":
             # Confirmation step to ensure the user did not trigger the process by mistake
@@ -51,6 +53,10 @@ if __name__ == "__main__":
             prompt_software_selection()
 
         elif user_choice == "3":
+            # Initializes the uninstallation logic handling
+            prompt_software_removal()
+
+        elif user_choice == "4":
             print("\n[System] Shutting down Malenia Post Format Tool. Goodbye.")
             break # Breaks the while loop, safely closing the execution
             

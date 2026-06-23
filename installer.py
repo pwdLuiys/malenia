@@ -1,5 +1,6 @@
 #lets import the essencials again
 import subprocess
+# 'subprocess' lets Python run terminal/cmd commands just like a real user.
 
 # Master dictionary containing all requested applications, categorized.
 # I asked Gemini to provide this dictionary, im not writing it myself wtf.

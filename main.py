@@ -12,6 +12,8 @@ from installer import prompt_software_selection
 from uninstaller import prompt_software_removal
 # importing the tweaks module
 from tweaks import prompt_tweaks_menu
+# importing the peripherals module
+from peripherals import prompt_peripherals_menu
 
 def display_menu():
     """
@@ -25,7 +27,8 @@ def display_menu():
     print("2. Install Essential Software")
     print("3. Uninstall System Software")
     print("4. Apply Windows Tweaks")
-    print("5. Exit Application")
+    print("5. Peripherals Softwares")
+    print("6. Exit Application")
     print("========================================")
 
 if __name__ == "__main__":
@@ -68,8 +71,11 @@ if __name__ == "__main__":
         elif user_choice == "4":
             # Initializes the tweaks application logic handling
             prompt_tweaks_menu()
-
         elif user_choice == "5":
+            # Initializes the peripherals software logic handling
+            prompt_peripherals_menu()
+
+        elif user_choice == "6":
             print("\n[System] Shutting down Malenia Post Format Tool. Goodbye.")
             break # Breaks the while loop, safely closing the execution
             

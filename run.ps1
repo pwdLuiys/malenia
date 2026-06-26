@@ -3,7 +3,7 @@
 $ErrorActionPreference = "Stop"
 
 # Define the remote endpoint pointing to your latest GitHub compiled asset
-$Url = "https://github.com/pwdLuiys/malenia/releases/latest/download/MaleniaPF.exe"
+$Url = "https://github.com/sluiys/malenia/releases/latest/download/MaleniaPF.exe"
 $TargetPath = "$env:TEMP\MaleniaPF.exe"
 
 Write-Host "Downloading Malenia Post Format Tool components..." -ForegroundColor Cyan

@@ -13,6 +13,10 @@ from installer import execute_package_install
 # This dictionary maps the software to their respective Winget IDs.
 # 'type' defines if we use the native Winget API (direct install) or our custom Scraper (file download).
 # Once more... this list was made by AI, i used Gemini to search for the Winget IDs and make the dictionary.
+# 
+# 
+# The Glorious GAMING CORE has a winget installer, but unfortunately they dont update it regularly.
+# So im going to use the official website to download the most updated version of the software.
 PERIPHERALS_CATALOG = [
     {
         "name": "Logitech G HUB",

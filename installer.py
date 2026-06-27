@@ -149,7 +149,7 @@ SOFTWARE_CATALOG = {
         {"name": "WinRAR", "id": "RARLab.WinRAR"},
         {"name": "Oracle VirtualBox", "id": "Oracle.VirtualBox"},
         {"name": "TeamViewer", "id": "TeamViewer.TeamViewer"},
-        {"name": "Process Lasso", "id": "Bitsum.ProcessLasso"},
+        {"name": "Process Lasso", "id": "BitSum.ProcessLasso"},
         {"name": "Proton Pass", "id": "Proton.ProtonPass"},
         {"name": "TreeSize Free", "id": "JAMSoftware.TreeSize.Free"},
         {"name": "Revo Uninstaller", "id": "VSRevoGroup.RevoUninstaller.Free"}
@@ -182,9 +182,17 @@ def execute_package_install(package_id, package_name):
     try:
         # Winget execution command with silent agreement flags (we dont want the user to be prompted...)
         command = [
-            "winget", "install", "-e", "--id", package_id, 
-            "--accept-package-agreements", "--accept-source-agreements"
+            "winget", "install", 
+            "--id", package_id, 
+            "--exact", 
+            "--accept-package-agreements", 
+            "--accept-source-agreements"
         ]
+
+        # So Spotify needs the context window to be set to user scope, not the adminstrador one.
+        # But the software needs alot of admin permissions to run properly, so we need to run it as user when installing spotify specifically.
+        if package_id == "Spotify.Spotify":
+            command.extend(["--scope", "user"])
             
         subprocess.run(command, check=True)
         print(f"[Success] {package_name} was successfully installed.")

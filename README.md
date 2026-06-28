@@ -9,7 +9,7 @@ MaleniaPF is an automated utility for post-formatting Windows systems. It stream
 You do not need to install Python or clone the repository to run this tool. Simply open an elevated **PowerShell** terminal (run as Administrator) and execute the following command:
 
 ```powershell
-irm https://raw.githubusercontent.com/pwdLuiys/malenia/main/run.ps1 | iex
+irm https://raw.githubusercontent.com/sluiys/malenia/main/run.ps1 | iex
 ```
 This command automatically streams the MaleniaPF execution kernel to your system memory, triggers administrative elevation, and cleans up temporary traces after exit.
 Tool Modules & Functionality
